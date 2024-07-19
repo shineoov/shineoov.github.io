@@ -4,8 +4,8 @@ title: Linux Command Line
 category: Linux
 tags:
   - Linux
-date: 2024-07-19 14:00:00 +0900
-last_modified_at: 2024-07-19 15:00:00 +0900
+date: 2024-07-19 16:00:00 +0900
+last_modified_at: 2024-07-20 00:39:00 +0900
 ---
 
 ## 텍스트 처리
@@ -122,7 +122,6 @@ $ ls -al | sort -k N
 | **-i**, **--ignore-case** | 대소문자 무시        |
 
 ```bash
-
 # 연속적인 중복 텍스트만 제거
 $ uniq ${FILE_NAME}
 
@@ -142,4 +141,131 @@ $ uniq -i ${FILE_NAME}
 # grep 으로 검색 후 파일 이름 중복 제거 
 $ grep -r "format" * | awk -F: '{print $1}' | uniq
 
+```
+
+### cut
+> 컬럼 잘라 내기
+
+| 옵션                            | 설명                |
+| ----------------------------- | ----------------- |
+| **-b**, **--bytes=LIST**      | byte 선택           |
+| **-c**, **--characters=LIST** | character 선택      |
+| **-f**, **--fields=LIST**     | 필드(컬럼) 선택         |
+| **-d**, **--delimiter=DELIM** | tab 대신 사용할 구분자 지정 |
+| **--complement**              | 선택 반전             |
+| **--output-delimiter=STRING** | 출력시 사용할 구분자 지정    |
+
+```bash
+
+# 주어진 문자열에 "1" 번째 문자열 출력
+$ echo "a:b:c:d:e" | cut -b 1
+
+# 주어진 문자열에 "1" 번째 부터 "3" 번째 문자열 출력
+$ echo "a:b:c:d:e" | cut -b 1-3
+
+# 주어진 문자열에 ":" 로 구분 하고 "1" 번째 "3" 번째 출력 하고 구분자를 " = " 로 출력
+$ echo "a:b:c:d:e" | cut -d":" -f 1,3 --output-delimiter=" = "
+
+# 주어진 문자열에서 "1" 번째 부터 "5" 번째 까지 출력
+$ echo "a:b:c:d:e" | cut -c 1-5
+
+# 주어진 문자열에서 "3"번째 문자열 부터 출력
+$ echo "a:b:c:d:e" | cut -c 3-
+
+# 주어진 문자열에서 "3"번째 문자열 까지 출력
+$ echo "a:b:c:d:e" | cut -c -3
+```
+
+### tr
+> 문자 내용을 변환하거나 지우기
+
+```bash
+# 주어진 문자에서 ":" 문자열을 '?' 로 변환
+$ echo "a:b:c" | tr  ':' '?'
+
+# 주어진 문자에서 대문자를 소문자로 변환
+$ echo "It's easy" | tr [:upper:] [:lower:]
+
+# 주어진 문자에서 "a" ~ "g" 문자열을 "*" 로 변환 
+$ echo "abcdefghijklmn"| tr "a-g" "*"
+
+# "a", "b", "c" 를 제외한 문자열을 '*' 로 치환
+$ echo "abcdefg" | tr -c 'abc' '*'
+
+# 주어진 문자열에 ":" 제거
+$ echo "a:b:c" | tr -d ":"
+
+# 주어진 문자열에 "a", "b" 제거
+$ echo "abc" | tr -d "ab"
+```
+
+### sed
+> stream editor
+
+| 옵션                   | 설명                                         |
+| -------------------- | ------------------------------------------ |
+| **{RANGE}p**         | range 내의 라인을 출력                            |
+| **{RANGE}d**         | range 내의 라인을 삭제                            |
+| **/SEARCHPATTERN/p** | SEARCH PATTERN 과 매치되는 라인을 출력               |
+| **/SEARCHPATTERN/d** | SEARCH PATTERN 과 매치되는 라인을 삭제               |
+| **s/REGEX/REPLACE/** | REGEX 에 매치되는 부분을 REPLACE 로 교체 (substitute) |
+
+```bash
+# "1" ~ "5" 라인 까지만 출력
+$ cat ${FILE_NAME} | sed -n '1,5'
+
+# "1" ~ "5" 라인은 삭제
+$ cat ${FILE_NAME} | sed '1,5d'
+
+# "1" 문자열과 일치하는 라인만 출력
+$ cat ${FILE_NAME} | sed -n '/1/p'
+
+# "1" 문자열과 일치하지 않는 라인만 출력
+$ cat ${FILE_NAME} | sed  '/1/d'
+
+# "1" 문자열을 "*" 로 변환하여 출력 (라인당 하나만 변환)
+$ cat ${FILE_NAME} | sed  's/1/*/'
+
+# "1" 문자열 모두를 "*" 로 변환하여 출력
+$ cat ${FILE_NAME} | sed  's/1/*/g'
+
+# "4" 라는 문자열이 있는 라인 부터 "9" 라인 까지 출력
+$ cat ${FILE_NAME} | sed -n '/4/,9p'
+
+# "4" 라는 문자열이 있는 라인 부터 "4" + "3" 라인 까지 출력
+$ cat ${FILE_NAME} | sed -n '/4/,+3p'
+```
+
+### awk
+> 텍스트 처리 script language  
+> syntax: **awk options 'selection _criteria {action}' input-file**
+
+| 옵션     | 설명                 |
+| ------ | ------------------ |
+| **-F** | field seperator 지정 |
+
+| 내장 변수                  | 설명                                                  |
+| ---------------------- | --------------------------------------------------- |
+| **$1**, **$2**, **$3** | Nth field                                           |
+| **NR**                 | 라인 번호 ( number of records )                         |
+| **NF**                 | 필드 개수 ( number of fields )                          |
+| **FS**                 | 필드 구분자  ( field separator (default 'white space') ) |
+| **RS**                 | 레코드 구분자 ( record separator(default 'new line') )    |
+| **OFS**                | 출력 필드 구분자 ( Output field separator )                |
+| **ORS**                | 출력 레코드 구분자 ( Output record separator )              |
+
+```bash
+# "2" 번째 필드 출력 ( white space 로 구분 )
+$ cat ${FILE_NAME} | awk '{ print $2}'
+
+# ":" 로 필드를 구분하고 "2" 번째 필드 출력
+$ cat ${FILE_NAME} | awk -F: '{ print $1}'
+
+# "7" 로 검색하고 검색된 라인에 "1" 번째 필드 출력
+$ cat ${FILE_NAME} | awk -F: '/7/{ print $1}'
+
+# 기타 내장 변수 사용
+$ cat ${FILE_NAME} | awk -F: '/sd/ { print $3}'
+$ cat ${FILE_NAME} | awk -F: '{ print NR, "==>", NF}'
+$ cat ${FILE_NAME} | awk -F: '{ print NR "==>" NF}'
 ```
