@@ -383,7 +383,7 @@ $ grep -i "datetime" *
 $ grep -v "datetime" *
 
 # "datetime" 문자열이 포함된 파일들을 찾아 중복 없이 정렬된 파일 목록 출력
-$ grep -ri "datetime" * | awk -F: '{ print $1 }' | sort -uR
+$ grep -ri "datetime" * | awk -F: '{ print $1 }' | sort -u
 
 # 현재 디렉토리의 파일들에서 "datetime" 문자열을 출력 없이 검색 
 $ grep "datetime" * -q
