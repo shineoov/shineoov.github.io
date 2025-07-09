@@ -22,7 +22,7 @@ $ yarn add --dev prettier
 
 ## Settings
 
-> `./prettierrc` 설정
+> `.prettierrc` 설정
 
 ```json
 {  
